@@ -28,13 +28,25 @@ def draw(dv):
     if dv[0] == 0: # DRAW MAIN-SCREEN
         if dv[1] == 0: # DRAW FIRST-MENU
             window.fill((50, 50, 50))
-            textsurface = main_font.render("Game Name", False, (255, 255, 255))
-            window.blit(textsurface, (100, 100))
+            textsurface = main_font.render("Lander Lander", False, (255, 255, 255))
+            window.blit(textsurface, (150, 100))
 
             button((1300, 600), 250, 60, "draw_var", (1, 0), "Start", Anim=True)
             button((1320, 670), 250, 60, "draw_var", (0, 1), "How To Play", Anim=True)
             button((1340, 740), 250, 60, "draw_var", (0, 2), "Options", Anim=True)
             button((1360, 810), 250, 60, "end", 1, "Quit", Anim=True)
+
+            an, x, y, angle, r = 2.5, 500, 600, pi+pi/2, 100
+            for n in range(random.randint(5, 10)):
+                pg.draw.circle(window, (255, 165, 0), (
+                int(x + cos(angle + pi) * random.randint(r+10, r+r+10)),
+                int(y + sin(angle + pi) * random.randint(r+10, r+r+10))), random.randint(30, 40), 0)
+            p0 = (cos(angle) * r + x, sin(angle) * r + y)
+            p1 = (cos(angle + an) * r + x, sin(angle + an) * r + y)
+            p2 = (cos(angle - an) * r + x, sin(angle - an) * r + y)
+            pg.draw.line(window, player.color, p0, p1, 5)
+            pg.draw.line(window, player.color, p1, p2, 5)
+            pg.draw.line(window, player.color, p2, p0, 5)
         if dv[1] == 1: # DRAW HOW TO PLAY
             anim_count = 1000
             window.fill((50, 50, 50))
@@ -200,6 +212,24 @@ def game():
 
     draw_game()
 
+def game_over():
+    global draw_var, anim_count
+
+    window.fill((0, 0, 0))
+    textsurface = main_font.render("Game over", False, (255, 255, 255))
+    window.blit(textsurface, (0, 0))
+    pg.display.update()
+
+    tt = time.time()
+    while time.time() - tt < 3:
+        if pg.mouse.get_pressed()[0] == 1:
+            break
+        if get_hotkey_name().lower() == "space":
+            break
+
+    anim_count = 1000
+    draw_var = (0, 0)
+
 def draw_game():
     global terrain
     window.fill((0, 0, 0))
@@ -219,21 +249,6 @@ def draw_game():
     if player.flame:
         for n in range(random.randint(5, 10)):
             pg.draw.circle(window, (255, 165, 0), (int(player.x + cos(player.angle+pi)*random.randint(22, 42)), int(player.y + sin(player.angle+pi)*random.randint(22, 42))), random.randint(2, 5), 0)
-
-    GH = height/2
-    for index in range(len(terrain)):
-        try:
-            if terrain[index][0] >= player.x:
-                GH = abs(round((player.x - terrain[index-1][0])/(width/len(terrain)-1)*(terrain[index-1][1]-terrain[index][1]) ,0) - terrain[index-1][1])
-                pg.draw.line(window, (0, 255, 0), terrain[index], terrain[index - 1], 1)
-                break
-        except ZeroDivisionError:
-            GH = terrain[index][1]
-            pg.draw.line(window, (0, 255, 0), terrain[index], terrain[index - 1], 1)
-            break
-    pg.draw.line(window, (255, 0, 0), (player.x, player.y + 20), (player.x, GH), 1)
-    pg.draw.line(window, (255, 0, 0), (player.x+10, GH), (player.x-10, GH), 1)
-
 
 class Player():
     def __init__(self):
@@ -265,6 +280,22 @@ class Player():
                 key_ = key_ + key.lower()
         for key in keys:
             pass
+
+        GH = height / 2
+        for index in range(len(terrain)):
+            try:
+                if terrain[index][0] >= player.x:
+                    GH = abs(round((player.x - terrain[index - 1][0]) / (width / len(terrain) - 1) * (
+                                terrain[index - 1][1] - terrain[index][1]), 0) - terrain[index - 1][1])
+                    pg.draw.line(window, (0, 255, 0), terrain[index], terrain[index - 1], 1)
+                    break
+            except ZeroDivisionError:
+                GH = terrain[index][1]
+                pg.draw.line(window, (0, 255, 0), terrain[index], terrain[index - 1], 1)
+                break
+
+        if GH <= self.y+20:
+            game_over()
 
         # point id the direction of the mouse
         self.angle = atan2(self.aim[0] - self.x, self.aim[1] - self.y) * -1 + pi/2
