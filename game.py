@@ -29,9 +29,9 @@ def draw(dv):
         if dv[1] == 0: # DRAW FIRST-MENU
             window.fill((50, 50, 50))
             textsurface = main_font.render("Lander Lander", False, (255, 255, 255))
-            window.blit(textsurface, (150, 100))
+            window.blit(textsurface, (200, 100))
 
-            button((1300, 600), 250, 60, "draw_var", (1, 0), "Start", Anim=True)
+            button((1300, 600), 250, 60, "draw_var", (1, 2), "Start", Anim=True)
             button((1320, 670), 250, 60, "draw_var", (0, 1), "How To Play", Anim=True)
             button((1340, 740), 250, 60, "draw_var", (0, 2), "Options", Anim=True)
             button((1360, 810), 250, 60, "end", 1, "Quit", Anim=True)
@@ -44,9 +44,9 @@ def draw(dv):
             p0 = (cos(angle) * r + x, sin(angle) * r + y)
             p1 = (cos(angle + an) * r + x, sin(angle + an) * r + y)
             p2 = (cos(angle - an) * r + x, sin(angle - an) * r + y)
-            pg.draw.line(window, player.color, p0, p1, 5)
-            pg.draw.line(window, player.color, p1, p2, 5)
-            pg.draw.line(window, player.color, p2, p0, 5)
+            pg.draw.line(window, (255, 255, 255), p0, p1, 5)
+            pg.draw.line(window, (255, 255, 255), p1, p2, 5)
+            pg.draw.line(window, (255, 255, 255), p2, p0, 5)
         if dv[1] == 1: # DRAW HOW TO PLAY
             anim_count = 1000
             window.fill((50, 50, 50))
@@ -54,21 +54,35 @@ def draw(dv):
             window.blit(textsurface, (100, 100))
 
             textsurface = text_font.render(
-                "About this game About this game About this game About this game About this game About this game"
-                "About this game About this game About this game", False, (255, 255, 255))
+                '"Welcome pilot, your orbital ship is ready to detach, have a save fall."', False, (255, 255, 255))
             window.blit(textsurface, (250, 300))
             textsurface = text_font.render(
-                "About this game About this game About this game About this game About this game About this game"
-                "About this game About this game About this game", False, (255, 255, 255))
+                "", False, (255, 255, 255))
             window.blit(textsurface, (250, 350))
             textsurface = text_font.render(
-                "About this game About this game About this game About this game About this game About this game"
-                "About this game About this game About this game", False, (255, 255, 255))
+                "You are a pilot of a orbital drop ship and your mission is to land on one of landing pads, every "
+                "landing pad is fully lit with red lights, you", False, (255, 255, 255))
             window.blit(textsurface, (250, 400))
             textsurface = text_font.render(
-                "About this game About this game About this game About this game About this game About this game"
-                "About this game About this game About this game", False, (255, 255, 255))
+                "can't miss it. Your cargo is impact sensitive so don't crash into landing pad too hard and don't "
+                "even think about landing on the surface.", False, (255, 255, 255))
             window.blit(textsurface, (250, 450))
+            textsurface = text_font.render(
+                "You can rotate your ship by moving your mouse, ship will automatically point toward it."
+                "", False, (255, 255, 255))
+            window.blit(textsurface, (250, 500))
+            textsurface = text_font.render(
+                "If you need additional thrust just press LEFT mouse button, you will accelerate in a no time."
+                "", False, (255, 255, 255))
+            window.blit(textsurface, (250, 550))
+            textsurface = text_font.render(
+                ""
+                "", False, (255, 255, 255))
+            window.blit(textsurface, (250, 600))
+            textsurface = text_font.render(
+                "Now you know everything important, save fall pilot!"
+                "", False, (255, 255, 255))
+            window.blit(textsurface, (250, 650))
 
             button((1620, 980), 250, 60, "draw_var", (0, 0), "Back")
         if dv[1] == 2: # DRAW OPTIONS
@@ -128,13 +142,14 @@ def draw(dv):
             textsurface = title_font.render("Pause", False, (255, 255, 255))
             window.blit(textsurface, (100, 100 - pause_drop))
 
-            button((1580, 840 - pause_drop), 250, 60, "draw_var", (1, 0), "Return")
+            button((1560, 770 - pause_drop), 250, 60, "draw_var", (1, 0), "Return")
+            button((1580, 840 - pause_drop), 250, 60, "draw_var", (1, 2), "Restart")
             button((1600, 910 - pause_drop), 250, 60, "draw_var", (0, 0), "Exit")
             button((1620, 980 - pause_drop), 250, 60, "end", 1, "Quit")
 
 mouse_clic_time = time.time()
 def button(poz, length, height, on_click0, on_click1, text, Anim=False, style="vector"):
-    global draw_var, end, anim_count, anim_on, mouse_clic_time
+    global draw_var, end, anim_count, anim_on, mouse_clic_time, score, round_time
     mouse = pg.mouse.get_pos()
     mouse_click = pg.mouse.get_pressed()
 
@@ -151,6 +166,9 @@ def button(poz, length, height, on_click0, on_click1, text, Anim=False, style="v
                 mouse_clic_time = time.time()
                 if on_click0 == "draw_var":
                     draw_var = on_click1
+                    if on_click1 == (1, 2):
+                        round_time = time.time()
+                        score = 0
                 if on_click0 == "end":
                     end = on_click1
                 if on_click0 == "anim_on":
@@ -189,9 +207,11 @@ def button(poz, length, height, on_click0, on_click1, text, Anim=False, style="v
             pg.draw.line(window, off, (poz[0], poz[1] + height), (poz[0] + length, poz[1] + height), 3)
             window.blit(textsurface, (poz[0] + 10, poz[1]))
 
+
 terrain = []
-def terrain_manager():
-    global terrain
+end_platform = (0, 0, 0)
+def world_manager():
+    global terrain, end_platform
 
     x = 0
     y = 100
@@ -205,37 +225,124 @@ def terrain_manager():
         terrain.append((x, height - y))
         x += width/times
         x = int(round(x, 0))
-    terrain_done = True
 
+    endP = False
+    while not endP:
+        n = random.randint(2, len(terrain) - 3)
+        try:
+            if terrain[n - 1][1] > terrain[n][1]:
+                end_platform = (terrain[n][0], terrain[n][1], 0)
+                endP = True
+            if terrain[n + 1][1] > terrain[n][1]:
+                end_platform = (terrain[n][0], terrain[n][1], 1)
+                endP = True
+        except:
+            pass
+
+round_time = 0
 def game():
     player.update()
 
     draw_game()
 
-def game_over():
-    global draw_var, anim_count
+wins = 0
+def win():
+    global draw_var, anim_count, wins, best_score, score, round_time
+    wins += 1
 
-    window.fill((0, 0, 0))
-    textsurface = main_font.render("Game over", False, (255, 255, 255))
-    window.blit(textsurface, (0, 0))
-    pg.display.update()
+    current_score = 100 - int(round((time.time() - round_time) * 5, 0 ))
+    if current_score < 0:
+        current_score = 0
+    score += current_score
 
-    tt = time.time()
-    while time.time() - tt < 3:
-        if pg.mouse.get_pressed()[0] == 1:
-            break
+    blink = 300
+    while True:
+        window.fill((0, 0, 0))
+        textsurface = main_font.render("YOU WON", False, (255, 255, 255))
+        window.blit(textsurface, (int(width / 10), 100))
+        if blink > 100:
+            textsurface = text_font.render("PRESS SPACE TO CONTINUE", False, (255, 255, 255))
+            window.blit(textsurface, (int(1550 ), height-100))
+        blink -= 1
+        if blink == 0:
+            blink = 300
+
+        txt = f"CURRENT SCORE : {current_score}"
+        textsurface = title_font.render(txt, False, (255, 255, 255))
+        window.blit(textsurface, (int(width / 10), 500))
+
+        txt = f"TOTAL SCORE : {score}"
+        textsurface = title_font.render(txt, False, (255, 255, 255))
+        window.blit(textsurface, (int(width / 10), 600))
+
+        txt = f"BEST SCORE : {best_score}"
+        textsurface = title_font.render(txt, False, (255, 255, 255))
+        window.blit(textsurface, (int(width / 10), 700))
+        pg.display.update()
+
         if get_hotkey_name().lower() == "space":
             break
+
+    draw_var = (1, 2)
+
+score = 0
+best_score = 0
+def game_over():
+    global draw_var, anim_count, best_score, score
+
+    if best_score < score:
+        best_score = score
+
+    blink = 300
+    while True:
+        window.fill((0 , 0, 0))
+        textsurface = main_font.render("YOU LOST", False, (255, 255, 255))
+        window.blit(textsurface, (int(width / 10), 100))
+        if blink > 100:
+            textsurface = text_font.render("PRESS SPACE TO CONTINUE", False, (255, 255, 255))
+            window.blit(textsurface, (int(1550), height - 100))
+        blink -= 1
+        if blink == 0:
+            blink = 300
+
+        txt = f"YOUR SCORE : {score}"
+        textsurface = title_font.render(txt, False, (255, 255, 255))
+        window.blit(textsurface, (int(width / 10), 500))
+
+        txt = f"BEST SCORE : {best_score}"
+        textsurface = title_font.render(txt, False, (255, 255, 255))
+        window.blit(textsurface, (int(width / 10), 600))
+        pg.display.update()
+
+        if get_hotkey_name().lower() == "space":
+            break
+
+    score = 0
 
     anim_count = 1000
     draw_var = (0, 0)
 
 def draw_game():
-    global terrain
+    global terrain, end_platform
     window.fill((0, 0, 0))
 
+    # DRAWING GROUND
     for index in range(len(terrain) - 1):
         pg.draw.line(window, (255, 255, 255), terrain[index], terrain[index + 1], 1)
+
+    # DRAWING END PLATFORM
+    if end_platform[2] == 0:
+        pg.draw.circle(window, (255, 0, 0), (end_platform[0] - 100, end_platform[1] - 10), 3, 0)
+        pg.draw.circle(window, (255, 0, 0), (end_platform[0], end_platform[1] - 10), 3, 0)
+        pg.draw.line(window, (255, 255, 255), (end_platform[0] - 100, end_platform[1]), (end_platform[0] - 100, end_platform[1] - 10), 1)
+        pg.draw.line(window, (255, 255, 255), (end_platform[0], end_platform[1]), (end_platform[0], end_platform[1] - 10), 1)
+        pg.draw.line(window, (255, 255, 255), (end_platform[0], end_platform[1]), (end_platform[0] - 100, end_platform[1]), 1)
+    else:
+        pg.draw.circle(window, (255, 0, 0), (end_platform[0] + 100, end_platform[1] - 10), 3, 0)
+        pg.draw.circle(window, (255, 0, 0), (end_platform[0], end_platform[1] - 10), 3, 0)
+        pg.draw.line(window, (255, 255, 255), (end_platform[0] + 100, end_platform[1]), (end_platform[0] + 100, end_platform[1] - 10), 1)
+        pg.draw.line(window, (255, 255, 255), (end_platform[0], end_platform[1]), (end_platform[0], end_platform[1] - 10), 1)
+        pg.draw.line(window, (255, 255, 255), (end_platform[0], end_platform[1]), (end_platform[0] + 100, end_platform[1]), 1)
 
     # DRAWING PLAYER SHIP
     an = 2.5
@@ -253,9 +360,9 @@ def draw_game():
 class Player():
     def __init__(self):
         self.x = width / 2
-        self.y = height / 2
-        self.x_acc = 0
-        self.y_acc = 0
+        self.y = 30
+        self.x_acc = random.uniform(0, 8) - 4
+        self.y_acc = -10
         self.color = (255, 255, 255)
         self.speed = 0.2
         self.max_speed = 5
@@ -281,26 +388,61 @@ class Player():
         for key in keys:
             pass
 
+        # GROUND COLLISION CALCULATION
         GH = height / 2
         for index in range(len(terrain)):
             try:
                 if terrain[index][0] >= player.x:
                     GH = abs(round((player.x - terrain[index - 1][0]) / (width / len(terrain) - 1) * (
                                 terrain[index - 1][1] - terrain[index][1]), 0) - terrain[index - 1][1])
-                    pg.draw.line(window, (0, 255, 0), terrain[index], terrain[index - 1], 1)
                     break
             except ZeroDivisionError:
                 GH = terrain[index][1]
-                pg.draw.line(window, (0, 255, 0), terrain[index], terrain[index - 1], 1)
                 break
+
+        if end_platform[2] == 0:
+            if end_platform[0] > player.x > end_platform[0] - 100:
+                if end_platform[1] - 20 > player.y > end_platform[1] - 30:
+                    GH = end_platform[1]
+        else:
+            if end_platform[0] < player.x < end_platform[0] + 100:
+                if end_platform[1] - 20 > player.y > end_platform[1] - 30:
+                    GH = end_platform[1]
 
         if GH <= self.y+20:
             game_over()
 
-        # point id the direction of the mouse
+        # END PLATFORM COLLISION CALCULATION
+        if end_platform[2] == 0:
+            if end_platform[0] > player.x > end_platform[0] - 100:
+                if end_platform[1] - 19 > player.y > end_platform[1] - 30:
+                    if player.x_acc < 4:
+                        if player.y_acc < 5:
+                            win()
+                        else:
+                            if player.y < end_platform[1] - 20:
+                                game_over()
+                    else:
+                        if player.y < end_platform[1] - 20:
+                            game_over()
+        else:
+            if end_platform[0] < player.x < end_platform[0] + 100:
+                if end_platform[1] - 20 > player.y > end_platform[1] - 30:
+                    if player.x_acc < 4:
+                        if player.y_acc < 5:
+                            win()
+                        else:
+                            if player.y < end_platform[1] - 20:
+                                game_over()
+                    else:
+                        if player.y < end_platform[1] - 20:
+                            game_over()
+
+        # point in the direction of the mouse
         self.angle = atan2(self.aim[0] - self.x, self.aim[1] - self.y) * -1 + pi/2
         self.aim = mouse
 
+        # ACCELERATION if mouse == 1
         self.flame = False
         if mouse_c[0] == 1:
             self.x_acc += cos(self.angle) * self.speed
@@ -312,6 +454,21 @@ class Player():
             else:
                 self.y_acc += 0.1
 
+        # over the edge prevention
+        if self.x > width:
+            self.x = width
+            self.x_acc = 0
+        if self.x < 0:
+            self.x = 0
+            self.x_acc = 0
+        if self.y > height:
+            self.y = height
+            self.y_acc = 0
+        if self.y < 0:
+            self.y = 0
+            self.y_acc = 0
+
+        # beautifying PLAYER DATA
         if self.angle > pi*2:
             self.angle -= pi*2
         if self.angle < 0:
@@ -320,23 +477,10 @@ class Player():
         self.x += self.x_acc / 2
         self.y += self.y_acc / 2
 
-        if self.x > width - 20:
-            self.x = width - 20
-            self.x_acc = 0
-        if self.x < 0 + 20:
-            self.x = 0 + 20
-            self.x_acc = 0
-        if self.y > height - 20:
-            self.y = height - 20
-            self.y_acc = 0
-        if self.y < 0 + 20:
-            self.y = 0 + 20
-            self.y_acc = 0
-
         self.x = round(self.x, 0)
         self.y = round(self.y, 0)
 
-################ Def settings !!!!!!!!! DELETE !!!!!!!!!!!!!!!
+################ developer custom settings !!!!!!!!! DELETE !!!!!!!!!!!!!!!
 anim_on = True
 ################
 
@@ -371,9 +515,6 @@ while True:
 
     # drawing menus and updating changes onto display
     if draw_var[0] == 0:
-        player = Player()
-        terrain = []
-        terrain_manager()
         draw(draw_var)
     if draw_var == (1, 1):
         if pause_drop > 0:
@@ -382,6 +523,13 @@ while True:
                 pause_drop -= 2
         if pause_drop < 0:
             pause_drop = 0
+    if draw_var == (1, 2):
+        player = Player()
+        terrain = []
+        world_manager()
+        time.sleep(0.1)
+        round_time = time.time()
+        draw_var = (1, 0)
     if draw_var == (0, 0):
         if anim_count > 0:
             anim_count -= anim_count / 80
