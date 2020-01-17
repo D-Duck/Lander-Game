@@ -10,7 +10,7 @@ MADE WITH PYTHON 3.3.x AND 3.8.3
 MADE BY ERIK KOVÁČ 
 DEVELOPER CONTACT [eerriikk1212@gmail.com]
 
-PROJECT VERSION [0.6]
+PROJECT VERSION [0.7]
 '''
 
 # Loading all fonts / font settings
@@ -76,13 +76,13 @@ draw_var = (0, 0)
 anim_on = True
 anim_count = 1000
 pause_drop = height
-game_stats = [[0, "Fuel spend", "L"], [0, "Wined", "Times"], [0, "Lost", "Times"], [0, "Time played", "SEC"], [0, "Target hit", "Times"], [0, "At the edge of the world", ""]]
+game_stats = [[0, "Fuel spend", "L"], [0, "Won", "Times"], [0, "Lost", "Times"], [0, "Time played", ""], [0, "Target hit", "Times"], [0, "At the edge of the world", ""], [0, "Best score", ""]]
 def draw(dv):
     global anim_count, pause_drop, text_stats
     if dv[0] == 0: # DRAW MAIN-SCREEN
         if dv[1] == 0: # DRAW FIRST-MENU
             window.fill((50, 50, 50))
-            textsurface = main_font.render("Lander Lander", False, (255, 255, 255))
+            textsurface = main_font.render("Project Lander Oldschool", False, (255, 255, 255))
             window.blit(textsurface, (200, 100))
 
             button((1300, 500), 250, 60, "draw_var", (1, 2), "Start", Anim=True)
@@ -106,7 +106,7 @@ def draw(dv):
         if dv[1] == 1: # DRAW HOW TO PLAY
             anim_count = 1000
             window.fill((50, 50, 50))
-            textsurface = title_font.render("How To Plat", False, (255, 255, 255))
+            textsurface = title_font.render("How To Play", False, (255, 255, 255))
             window.blit(textsurface, (100, 100))
 
             textsurface = text_font.render(
@@ -132,13 +132,21 @@ def draw(dv):
                 "", False, (255, 255, 255))
             window.blit(textsurface, (250, 550))
             textsurface = text_font.render(
-                ""
-                "", False, (255, 255, 255))
+                "But be careful winds can be extreme on those planets, they will blow you off your coarse very "
+                "easily", False, (255, 255, 255))
             window.blit(textsurface, (250, 600))
             textsurface = text_font.render(
-                "Now you know everything important, save fall pilot!"
+                "Try to get highest score and when you are done, just do it again and again and again and ..."
                 "", False, (255, 255, 255))
             window.blit(textsurface, (250, 650))
+            textsurface = text_font.render(
+                "You get my point, good luck pilot."
+                "", False, (255, 255, 255))
+            window.blit(textsurface, (250, 750))
+            textsurface = text_font.render(
+                'Oh and one last thing, some pilots are claiming that they saw "red" ground and they are '
+                "calling it target. You can get reward by titting it.", False, (255, 255, 255))
+            window.blit(textsurface, (250, 800))
 
             button((1620, 980), 250, 60, "draw_var", (0, 0), "Back")
         if dv[1] == 2: # DRAW OPTIONS
@@ -186,7 +194,7 @@ def draw(dv):
             #   pg.draw.rect(window, on, (x + 270, y, 60, 60))
 
             button((1620, 980), 250, 60, "draw_var", (0, 0), "Back")
-        if dv[1] == 3:
+        if dv[1] == 3: # DRAW GARAGE
             window.fill((50, 50, 50))
             textsurface = main_font.render("Garage", False, (255, 255, 255))
             window.blit(textsurface, (200, 100))
@@ -236,6 +244,17 @@ def draw(dv):
                 pg.draw.polygon(window, (0, 0, 0), [p0, p1, p2], 0)
                 pg.draw.line(window, player_color, p0, p1, 5)
                 pg.draw.line(window, player_color, p2, p0, 5)
+            if player_model == 4:
+                an = 2.3
+                p0 = (int(cos(angle) * size + x), int(sin(angle) * size + y))
+                p1 = (int(cos(angle + an) * size + x), int(sin(angle + an) * size + y))
+                p2 = (int(cos(angle - an) * size + x), int(sin(angle - an) * size + y))
+                p3 = (int(cos(angle - pi) * size + x), int(sin(angle - pi) * size + y))
+                pg.draw.polygon(window, (0, 0, 0), [p0, p1, p2], 0)
+                pg.draw.line(window, player_color, p0, p1, 5)
+                pg.draw.line(window, player_color, p2, p0, 5)
+                pg.draw.line(window, player_color, p3, p1, 5)
+                pg.draw.line(window, player_color, p2, p3, 5)
 
             # SHIP DESIGN TYPE
             textsurface = medium_font.render("SHIP TYPE", False, (255, 255, 255))
@@ -244,6 +263,7 @@ def draw(dv):
             button((300, 600), 75, 75, "player_model", 1, "2", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0), lock=unlocked[0][1])
             button((400, 600), 75, 75, "player_model", 2, "3", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0), lock=unlocked[0][2])
             button((500, 600), 75, 75, "player_model", 3, "4", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0), lock=unlocked[0][3])
+            button((600, 600), 75, 75, "player_model", 4, "5", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0), lock=unlocked[0][4])
 
             # SHIP COLOR SETTING
             textsurface = medium_font.render("SHIP COLOR", False, (255, 255, 255))
@@ -260,14 +280,19 @@ def draw(dv):
             button((1100, 800), 75, 75, "player_color", (149,202,228), "", style="full", fill=True, fill_color=(149,202,228), lock=unlocked[1][9])
 
             button((1620, 980), 250, 60, "draw_var", (0, 0), "Back")
-        if dv[1] == 4:
+        if dv[1] == 4: # DRAW STATS
             window.fill((50, 50, 50))
             textsurface = main_font.render("Stats" , False, (255, 255, 255))
             window.blit(textsurface, (200, 100))
 
             y, x = 220, 200
             for stat in game_stats:
-                txt = f"{stat[1]} = {stat[0]} {stat[2]}"
+                if stat[1] == "Time played":
+                    hours = int(stat[0] / 60 / 60)
+                    minutes = int(stat[0] / 60 % 60)
+                    txt = f"Time played = {hours}:{minutes}:{int(stat[0]%60)}"
+                else:
+                    txt = f"{stat[1]} = {stat[0]} {stat[2]}"
                 textsurface = text_font.render(txt , False, (255, 255, 255))
                 window.blit(textsurface, (x, y))
                 if x == 200:
@@ -284,9 +309,10 @@ def draw(dv):
             textsurface = text_font.render("UNLOCKS FOR SHIP TYPE", False, (255, 255, 255))
             window.blit(textsurface, (200, 650))
             button((200, 700), 75, 75, "txt", "DEFAULT SHIP DESIGN", "1", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0))
-            button((300, 700), 75, 75, "txt", "PLAY MORE THAN 10 MINUTES", "2", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0))
-            button((400, 700), 75, 75, "txt", "WIN AT LEAST 250 TIMES", "3", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0))
-            button((500, 700), 75, 75, "txt", "HIT TARGET AT LEAST ONCE", "4", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0))
+            button((300, 700), 75, 75, "txt", "TO UNLOCK : GET AT LEAST 2500 BEST-SCORE", "2", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0))
+            button((400, 700), 75, 75, "txt", "TO UNLOCK : WIN AT LEAST 250 TIMES", "3", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0))
+            button((500, 700), 75, 75, "txt", "TO UNLOCK : HIT TARGET AT LEAST ONCE", "4", style="full", fill=True, fill_color=(255, 255, 255), text_color=(0, 0, 0))
+            button((600, 700), 75, 75, "txt", "TO UNLOCK : PLAY AT LEAST 30 MIN", "5", style="full", fill=True, fill_color=(255, 255, 255),text_color=(0, 0, 0))
 
             # SHIP COLOR SETTING
             textsurface = text_font.render("UNLOCKS FOR SHIP COLOR", False, (255, 255, 255))
@@ -295,12 +321,12 @@ def draw(dv):
             button((300, 850), 75, 75, "txt", "DEFAULT SHIP COLOR", "", style="full", fill=True, fill_color=(255, 0, 0))
             button((400, 850), 75, 75, "txt", "DEFAULT SHIP COLOR", "", style="full", fill=True, fill_color=(0, 255, 0))
             button((500, 850), 75, 75, "txt", "DEFAULT SHIP COLOR", "", style="full", fill=True, fill_color=(0, 0, 255))
-            button((600, 850), 75, 75, "txt", "PLAY AT LEAST 5 MINUTES", "", style="full", fill=True, fill_color=(255, 255, 0))
-            button((700, 850), 75, 75, "txt", "WIN AT LEAST 10 TIMES", "", style="full", fill=True, fill_color=(0, 255, 255))
-            button((800, 850), 75, 75, "txt", "SPEND AT LEAST 900 LITERS OF FUEL", "", style="full", fill=True, fill_color=(255, 0, 255))
-            button((900, 850), 75, 75, "txt", "SPEND AT LEAST 30000 LITERS OF FUEL", "", style="full", fill=True, fill_color=(255, 165, 0))
-            button((1000, 850), 75, 75, "txt", "WIN AT LEAST 100 TIMES", "", style="full", fill=True, fill_color=(255, 20, 147))
-            button((1100, 850), 75, 75, "txt", "LOSE AT LEAST 100 TIMES", "", style="full", fill=True, fill_color=(149, 202, 228))
+            button((600, 850), 75, 75, "txt", "TO UNLOCK : PLAY AT LEAST 5 MINUTES", "", style="full", fill=True, fill_color=(255, 255, 0))
+            button((700, 850), 75, 75, "txt", "TO UNLOCK : WIN AT LEAST 10 TIMES", "", style="full", fill=True, fill_color=(0, 255, 255))
+            button((800, 850), 75, 75, "txt", "TO UNLOCK : SPEND AT LEAST 900 LITERS OF FUEL", "", style="full", fill=True, fill_color=(255, 0, 255))
+            button((900, 850), 75, 75, "txt", "TO UNLOCK : SPEND AT LEAST 30000 LITERS OF FUEL", "", style="full", fill=True, fill_color=(255, 165, 0))
+            button((1000, 850), 75, 75, "txt", "TO UNLOCK : WIN AT LEAST 100 TIMES", "", style="full", fill=True, fill_color=(255, 20, 147))
+            button((1100, 850), 75, 75, "txt", "TO UNLOCK : LOSE AT LEAST 100 TIMES", "", style="full", fill=True, fill_color=(149, 202, 228))
 
             button((1620, 980), 250, 60, "draw_var", (0, 0), "Back")
     if dv[0] == 1:
@@ -319,7 +345,7 @@ def draw(dv):
             button((1580, 840 - pause_drop), 250, 60, "draw_var", (1, 2), "Restart")
             button((1600, 910 - pause_drop), 250, 60, "draw_var", (0, 0), "Exit")
             button((1620, 980 - pause_drop), 250, 60, "end", 1, "Quit")
-unlocked = [[True, False, False, False], [True, True, True, True, False, False, False, False, False, False]]
+unlocked = [[True, False, False, False, False], [True, True, True, True, False, False, False, False, False, False]]
 text_stats = ""
 mouse_click_time = time.time()
 def button(poz, length, height_, on_click0, on_click1, text, Anim=False, style="vector", fill=False, fill_color=(255, 255, 255), text_color=(255, 255, 255), text_color_hover=(0, 0, 0), lock=True):
@@ -410,21 +436,22 @@ def update_unlocks():
 
     # SHIP MODELD
     unlocked[0][0] = True
-    unlocked[0][1] = game_stats[3][0] > 600
-    unlocked[0][2] = game_stats[1][0] > 250
+    unlocked[0][1] = game_stats[6][0] >= 2500
+    unlocked[0][2] = game_stats[1][0] >= 250
     unlocked[0][3] = game_stats[4][0] > 0
+    unlocked[0][4] = game_stats[3][0] >= 1800
 
     # SHIP COLORS
     unlocked[1][0] = True
     unlocked[1][1] = True
     unlocked[1][2] = True
     unlocked[1][3] = True
-    unlocked[1][4] = game_stats[3][0] > 300
-    unlocked[1][5] = game_stats[1][0] > 10
-    unlocked[1][6] = game_stats[0][0] > 900
-    unlocked[1][7] = game_stats[0][0] > 30000
-    unlocked[1][8] = game_stats[1][0] > 100
-    unlocked[1][9] = game_stats[2][0] > 100
+    unlocked[1][4] = game_stats[3][0] >= 300
+    unlocked[1][5] = game_stats[1][0] >= 10
+    unlocked[1][6] = game_stats[0][0] >= 900
+    unlocked[1][7] = game_stats[0][0] >= 30000
+    unlocked[1][8] = game_stats[1][0] >= 100
+    unlocked[1][9] = game_stats[2][0] >= 100
 
 stars = []
 terrain = []
@@ -509,7 +536,11 @@ def win():
         if current_score < 0:
             current_score = 0
         score += current_score
+        if best_score < score:
+            best_score = score
+            game_stats[6][0] = score
 
+    save_data()
     blink = 300
     while not nonstop_mode:
         for event in pg.event.get():
@@ -554,7 +585,9 @@ def game_over(msg):
     if not nonstop_mode:
         if best_score < score:
             best_score = score
+            game_stats[6][0] = best_score
 
+    save_data()
     blink = 300
     while not nonstop_mode:
         for event in pg.event.get():
@@ -640,6 +673,18 @@ def draw_player_model_3():
     pg.draw.line(window, player.color_outer, p0, p1, 1)
     pg.draw.line(window, player.color_outer, p2, p0, 1)
 
+def draw_player_model_4():
+    an = 2.3
+    p0 = (int(cos(player.angle) * player.size + player.x), int(sin(player.angle) * player.size + player.y))
+    p1 = (int(cos(player.angle + an) * player.size + player.x), int(sin(player.angle + an) * player.size + player.y))
+    p2 = (int(cos(player.angle - an) * player.size + player.x), int(sin(player.angle - an) * player.size + player.y))
+    p3 = (int(cos(player.angle - pi) * player.size + player.x), int(sin(player.angle - pi) * player.size + player.y))
+    pg.draw.polygon(window, player.color_inner, [p0, p1, p2], 0)
+    pg.draw.line(window, player.color_outer, p0, p1, 1)
+    pg.draw.line(window, player.color_outer, p2, p0, 1)
+    pg.draw.line(window, player.color_outer, p3, p1, 1)
+    pg.draw.line(window, player.color_outer, p2, p3, 1)
+
 player_color = (255, 255, 255)
 player_model = 0
 def draw_game():
@@ -724,6 +769,8 @@ def draw_game():
         draw_player_model_2()
     if player_model == 3:
         draw_player_model_3()
+    if player_model == 4:
+        draw_player_model_4()
     pg.draw.circle(window, (255, 255, 255), player.aim, 5, 5)
     if player.flame:
         for n in range(random.randint(5, 10)):
@@ -848,7 +895,7 @@ class Player:
 
         if GH <= self.y+player.size:
             if terrain[player.world][target[1] - 1][0] < player.x < terrain[player.world][target[1] + 1][
-                1] and player.world == target[0] or player.world == target[0]:
+                1] and player.world == target[0]:
                 if not nonstop_mode:
                     game_stats[4][0] += 1
                 game_over("but you at least hit te TARGET")
@@ -902,13 +949,77 @@ class Player:
 anim_on = False
 nonstop_mode = False
 ################
+# SAVING DATA TO A FILE
+def save_data():
+    global game_stats, player_color, player_model
+
+    file = open("save.sav", "w")
+    save = f"{game_stats[0][0]};{game_stats[1][0]};{game_stats[2][0]};{game_stats[3][0]};{game_stats[4][0]};{game_stats[5][0]};{game_stats[6][0]};{player_color[0]};{player_color[1]};{player_color[2]};{player_model};"
+    num = 0
+    for n in save:
+        for nn in n:
+            try:
+                num += int(nn)
+            except:
+                pass
+    save = save + str(num) + ";"
+    file.write(save)
+    print("\n[CONSOLE][O] Data saved")
+
+    del file
+    file = open("save.sav", "r")
+
+def read_data():
+    global game_stats, player_color, player_model, best_score
+    file = open("save.sav", "r")
+    file = file.read()
+    items, item = [], ""
+    for char in file:
+        if char == ";":
+            try:
+                items.append(int(item))
+            except:
+                pass
+            item = ""
+        else:
+            item = item + char
+    num = 0
+    for item in items:
+        item = str(item)
+        for n in item:
+            try:
+                num += int(n)
+            except:
+                pass
+    num -= int(str(items[-1])[0])
+    num -= int(str(items[-1])[1])
+
+    if items[-1] == num:
+        game_stats[0][0] = items[0]
+        game_stats[1][0] = items[1]
+        game_stats[2][0] = items[2]
+        game_stats[3][0] = items[3]
+        game_stats[4][0] = items[4]
+        game_stats[5][0] = items[5]
+        game_stats[6][0] = items[6]
+        player_color = (items[7], items[8], items[9])
+        player_model = items[10]
+        best_score = game_stats[6][0]
+
+        print("\n[CONSOLE][O] Data correctly loaded")
+        print(game_stats, player_color, player_model)
+    else:
+        print("\n[CONSOLE][E] Game data corrupted, deleting data")
+        print("[CONSOLE][E] Data deleted")
 
 count = 0
 time_b = time.time()
+read_data()
 while True:
     # event handler
     for event in pg.event.get():
         if event.type == pg.QUIT:
+            save_data()
             pg.quit()
             quit()
         if event.type == pg.KEYDOWN:
@@ -919,6 +1030,7 @@ while True:
                     elif draw_var[1] == 1:
                         draw_var = (draw_var[0], 0)
     if end == 1:
+        save_data()
         pg.quit()
         quit()
 
@@ -928,7 +1040,7 @@ while True:
             if time.time() - time_b >= 1/65:
                 game()
                 count += 1
-                if count == 65:
+                if count == 60:
                     count = 0
                     if not nonstop_mode:
                         game_stats[3][0] += 1
