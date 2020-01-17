@@ -4,6 +4,7 @@ import pygame as pg
 import pyautogui
 import random
 import time
+import sys
 
 '''
 MADE WITH PYTHON 3.3.x AND 3.8.3
@@ -48,7 +49,7 @@ if width != 1920 and height != 1080:
         print(f"Your answer was detected as NO, press any key to exit.")
         input()
         pg.quit()
-        quit()
+        sys.exit()
 pg.init()
 window = pg.display.set_mode((1920, 1080), pg.FULLSCREEN)
 
@@ -546,7 +547,7 @@ def win():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
-                quit()
+                sys.exit()
         window.fill((0, 0, 0))
         textsurface = main_font.render("YOU LANDED", False, (255, 255, 255))
         window.blit(textsurface, (int(width / 10), 100))
@@ -593,7 +594,7 @@ def game_over(msg):
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
-                quit()
+                sys.exit()
         window.fill((0 , 0, 0))
         textsurface = main_font.render("YOU LOST", False, (255, 255, 255))
         window.blit(textsurface, (int(width / 10), 100))
@@ -879,7 +880,7 @@ class Player:
                     game_stats[5][0] += 1
                 self.world = 5
         if self.y > height:
-            quit()
+            sys.exit()
 
         # GROUND COLLISION CALCULATION
         GH = ground_height(self.x)
@@ -953,7 +954,10 @@ nonstop_mode = False
 def save_data():
     global game_stats, player_color, player_model
 
-    file = open("save.sav", "w")
+    try:
+        file = open("save.sav", "w")
+    except:
+        file = open("save.sav", "x")
     save = f"{game_stats[0][0]};{game_stats[1][0]};{game_stats[2][0]};{game_stats[3][0]};{game_stats[4][0]};{game_stats[5][0]};{game_stats[6][0]};{player_color[0]};{player_color[1]};{player_color[2]};{player_model};"
     num = 0
     for n in save:
@@ -971,7 +975,11 @@ def save_data():
 
 def read_data():
     global game_stats, player_color, player_model, best_score
-    file = open("save.sav", "r")
+    try:
+        file = open("save.sav", "r")
+    except:
+        print("\n[CONSOLE][E] save file not existing")
+        return 0
     file = file.read()
     items, item = [], ""
     for char in file:
@@ -1007,7 +1015,6 @@ def read_data():
         best_score = game_stats[6][0]
 
         print("\n[CONSOLE][O] Data correctly loaded")
-        print(game_stats, player_color, player_model)
     else:
         print("\n[CONSOLE][E] Game data corrupted, deleting data")
         print("[CONSOLE][E] Data deleted")
@@ -1021,7 +1028,7 @@ while True:
         if event.type == pg.QUIT:
             save_data()
             pg.quit()
-            quit()
+            sys.exit()
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 if draw_var[0] == 1:
@@ -1032,7 +1039,7 @@ while True:
     if end == 1:
         save_data()
         pg.quit()
-        quit()
+        sys.exit()
 
     # activates game loop
     if draw_var[0] == 1:
