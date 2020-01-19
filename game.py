@@ -11,7 +11,7 @@ MADE WITH PYTHON 3.3.x AND 3.8.3
 MADE BY ERIK KOVÁČ 
 DEVELOPER CONTACT [eerriikk1212@gmail.com]
 
-PROJECT VERSION [0.7]
+PROJECT VERSION [1.0]
 '''
 
 # Loading all fonts / font settings
@@ -38,18 +38,6 @@ msg_travel_far = [
 
 # Creating window
 width, height = pyautogui.size()
-if width != 1920 and height != 1080:
-    print(f"ERROR : Screen resolution is not 1920x1080\nIt's not recommended to play it because it "
-          f"was not build with your resolution({width}x{height}) in mind\n")
-    answ = str(input("Do you still want to try it out (Y/N) < "))
-    if answ.lower() == "y":
-        print("\n You were warned (wait 3 sec)")
-        time.sleep(3)
-    else:
-        print(f"Your answer was detected as NO, press any key to exit.")
-        input()
-        pg.quit()
-        sys.exit()
 pg.init()
 window = pg.display.set_mode((1920, 1080), pg.FULLSCREEN)
 
@@ -77,7 +65,7 @@ draw_var = (0, 0)
 anim_on = True
 anim_count = 1000
 pause_drop = height
-game_stats = [[0, "Fuel spend", "L"], [0, "Won", "Times"], [0, "Lost", "Times"], [0, "Time played", ""], [0, "Target hit", "Times"], [0, "At the edge of the world", ""], [0, "Best score", ""]]
+game_stats = [[0, "Fuel used", "L"], [0, "Won", "Times"], [0, "Lost", "Times"], [0, "Time played", ""], [0, "Target hit", "Times"], [0, "At the edge of the world", ""], [0, "Best score", ""]]
 def draw(dv):
     global anim_count, pause_drop, text_stats
     if dv[0] == 0: # DRAW MAIN-SCREEN
@@ -89,11 +77,11 @@ def draw(dv):
             button((1300, 500), 250, 60, "draw_var", (1, 2), "Start", Anim=True)
             button((1320, 570), 250, 60, "draw_var", (0, 3), "My ship", Anim=True)
             button((1340, 640), 250, 60, "draw_var", (0, 1), "How To Play", Anim=True)
-            button((1360, 710), 250, 60, "draw_var", (0, 4), "Stats", Anim=True)
+            button((1360, 710), 250, 60, "draw_var", (0, 4), "Progress", Anim=True)
             button((1380, 780), 250, 60, "draw_var", (0, 2), "Options", Anim=True)
             button((1400, 850), 250, 60, "end", 1, "Quit", Anim=True)
 
-            an, x, y, angle, r = 2.5, 500, 600, pi+pi/2, 100
+            an, x, y, angle, r = 2.5, 500, 650, pi+pi/2, 100
             for n in range(random.randint(5, 10)):
                 pg.draw.circle(window, (255, 165, 0), (
                 int(x + cos(angle + pi) * random.randint(r+10, r+r+10)),
@@ -145,8 +133,8 @@ def draw(dv):
                 "", False, (255, 255, 255))
             window.blit(textsurface, (250, 750))
             textsurface = text_font.render(
-                'Oh and one last thing, some pilots are claiming that they saw "red" ground and they are '
-                "calling it target. You can get reward by titting it.", False, (255, 255, 255))
+                'Oh and one last thing, some pilots are claiming that they saw "red" ground outside of the first screen and they are '
+                "calling it target. You can get reward by hitting it.", False, (255, 255, 255))
             window.blit(textsurface, (250, 800))
 
             button((1620, 980), 250, 60, "draw_var", (0, 0), "Back")
@@ -158,7 +146,7 @@ def draw(dv):
 
             on = (255, 255, 255)
 
-            x, y = 300, 350
+            x, y = 300, 400
             button((x, y), 250, 60, "anim_on", 0, "menu anims", style="full")
             pg.draw.line(window, (255, 255, 255), (x + 270, y), (x + 270, y + 60), 3)
             pg.draw.line(window, (255, 255, 255), (x + 270, y), (x + 330, y), 3)
@@ -170,32 +158,21 @@ def draw(dv):
             if anim_on == 1:
                 pg.draw.rect(window, on, (x + 270, y, 60, 60))
 
-            x, y = 300, 500
+            x, y = 300, 550
             button((x, y), 250, 60, "nonstop_mode", 0, "nonstop mode", style="full")
             pg.draw.line(window, (255, 255, 255), (x + 270, y), (x + 270, y + 60), 3)
             pg.draw.line(window, (255, 255, 255), (x + 270, y), (x + 330, y), 3)
             pg.draw.line(window, (255, 255, 255), (x + 330, y), (x + 330, y + 60), 3)
             pg.draw.line(window, (255, 255, 255), (x + 270, y + 60), (x + 330, y + 60), 3)
             textsurface = text_font.render(
-                "No end-screen, win-screen or score", False, (255, 255, 255))
+                "No end/win screen, also No progress", False, (255, 255, 255))
             window.blit(textsurface, (x, y + 65))
             if nonstop_mode:
                 pg.draw.rect(window, on, (x + 270, y, 60, 60))
 
-            x, y = 300, 650
-            button((x, y), 250, 60, "", 0, "EMPTY", style="full")
-            pg.draw.line(window, (255, 255, 255), (x + 270, y), (x + 270, y + 60), 3)
-            pg.draw.line(window, (255, 255, 255), (x + 270, y), (x + 330, y), 3)
-            pg.draw.line(window, (255, 255, 255), (x + 330, y), (x + 330, y + 60), 3)
-            pg.draw.line(window, (255, 255, 255), (x + 270, y + 60), (x + 330, y + 60), 3)
-            textsurface = text_font.render(
-                "Dummie text text text text", False, (255, 255, 255))
-            window.blit(textsurface, (x, y + 65))
-            #if creative == 1:
-            #   pg.draw.rect(window, on, (x + 270, y, 60, 60))
-
             button((1620, 980), 250, 60, "draw_var", (0, 0), "Back")
         if dv[1] == 3: # DRAW GARAGE
+            anim_count = 1000
             window.fill((50, 50, 50))
             textsurface = main_font.render("Garage", False, (255, 255, 255))
             window.blit(textsurface, (200, 100))
@@ -282,6 +259,7 @@ def draw(dv):
 
             button((1620, 980), 250, 60, "draw_var", (0, 0), "Back")
         if dv[1] == 4: # DRAW STATS
+            anim_count = 1000
             window.fill((50, 50, 50))
             textsurface = main_font.render("Stats" , False, (255, 255, 255))
             window.blit(textsurface, (200, 100))
@@ -324,8 +302,8 @@ def draw(dv):
             button((500, 850), 75, 75, "txt", "DEFAULT SHIP COLOR", "", style="full", fill=True, fill_color=(0, 0, 255))
             button((600, 850), 75, 75, "txt", "TO UNLOCK : PLAY AT LEAST 5 MINUTES", "", style="full", fill=True, fill_color=(255, 255, 0))
             button((700, 850), 75, 75, "txt", "TO UNLOCK : WIN AT LEAST 10 TIMES", "", style="full", fill=True, fill_color=(0, 255, 255))
-            button((800, 850), 75, 75, "txt", "TO UNLOCK : SPEND AT LEAST 900 LITERS OF FUEL", "", style="full", fill=True, fill_color=(255, 0, 255))
-            button((900, 850), 75, 75, "txt", "TO UNLOCK : SPEND AT LEAST 30000 LITERS OF FUEL", "", style="full", fill=True, fill_color=(255, 165, 0))
+            button((800, 850), 75, 75, "txt", "TO UNLOCK : USE AT LEAST 900 LITERS OF FUEL", "", style="full", fill=True, fill_color=(255, 0, 255))
+            button((900, 850), 75, 75, "txt", "TO UNLOCK : USE AT LEAST 30000 LITERS OF FUEL", "", style="full", fill=True, fill_color=(255, 165, 0))
             button((1000, 850), 75, 75, "txt", "TO UNLOCK : WIN AT LEAST 100 TIMES", "", style="full", fill=True, fill_color=(255, 20, 147))
             button((1100, 850), 75, 75, "txt", "TO UNLOCK : LOSE AT LEAST 100 TIMES", "", style="full", fill=True, fill_color=(149, 202, 228))
 
@@ -946,10 +924,6 @@ class Player:
         self.x = round(self.x, 2)
         self.y = round(self.y, 2)
 
-################ developer custom settings !!!!!!!!! DELETE !!!!!!!!!!!!!!!
-anim_on = False
-nonstop_mode = False
-################
 # SAVING DATA TO A FILE
 def save_data():
     global game_stats, player_color, player_model
